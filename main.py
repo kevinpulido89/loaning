@@ -38,7 +38,7 @@ class Main:
             value=2,
             help="Ingrese el plazo en el que quiere diferir su préstamo",
         )
-        if st.button("Calcular/Simular"):
+        if st.button("Simular"):
             tasa = self.get_tasa_from_spreadsheets()
             data = {"deuda": int(vlr_solicitado), "rate": tasa, "time": int(plazo)}
             # st.write(data)
@@ -47,8 +47,10 @@ class Main:
 
             # st.text(f"{round(self.intereses_generados)=}")
 
-            st.text(
-                f"El plan de pago propuesto sería: cuotas de ${round(self.cuota_mensual)} por {data['time']} meses"
+            st.text(f"El plan de pago propuesto sería:")
+            st.info(
+                # f"cuotas de ${round(self.cuota_mensual)} por {data['time']} meses"
+                f"{data['time']} cuotas de ${self.cuota_mensual:,}"
             )
 
             st.warning(
@@ -58,6 +60,7 @@ class Main:
 
     def calcular_valores(self, **kwargs):
         self.cuota_mensual, self.intereses_generados = compound_interest(**kwargs)
+        self.cuota_mensual = round(self.cuota_mensual)
 
     def get_tasa_from_spreadsheets(self) -> float:
         try:
@@ -72,4 +75,4 @@ class Main:
 
 
 if __name__ == "__main__":
-    Main(titulo="Simulador de préstamos 💲💰").run()
+    Main(titulo="Simulador de préstamos 💰").run()
