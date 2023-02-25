@@ -61,8 +61,7 @@ class Main:
 
     def get_tasa_from_spreadsheets(self) -> float:
         try:
-            # google_sheet_id = st.secrets["google_sheet_id"]
-            google_sheet_id = "1HBladLXqVVPn7a7AQH-VjnW7AnmLruMPizdLuzMD-Zs"
+            google_sheet_id = st.secrets["google_sheet_id"]
             URL = f"https://docs.google.com/spreadsheets/d/{google_sheet_id}/gviz/tq?tqx=out:csv&sheet=nm"
             df = pd.read_csv(URL)
             df = df.dropna(axis=1, how="all")
