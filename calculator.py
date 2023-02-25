@@ -26,7 +26,7 @@ def compound_interest(deuda, rate, time):
     base = deuda / time
     saldo = deuda
     for _ in range(time):
-        CI = calculate_compound_interest(deuda=saldo, rate=rate, time=1.00)
+        CI = calculate_compound_interest(deuda=saldo, rate=rate, time=1.01)
         intereses.append(CI)
         saldo = saldo - base + CI
 
@@ -38,12 +38,12 @@ def compound_interest(deuda, rate, time):
     print(f"ganancia_final = {op1*time}")
 
 
-kwargs = {"deuda": 3_000_000, "rate": 4, "time": 12}
+kwargs = {"deuda": 500_000, "rate": 6.3, "time": 3}
 
 compound_interest(**kwargs)
 
-print(f"\nintereses op2= {calculate_compound_interest(**kwargs)}")
-op2 = calculate_compound_interest(**kwargs) / kwargs["time"] + kwargs["deuda"] / kwargs["time"]
+# print(f"\nintereses op2= {calculate_compound_interest(**kwargs)}")
+# op2 = calculate_compound_interest(**kwargs) / kwargs["time"] + kwargs["deuda"] / kwargs["time"]
 
-print(f"Cuota mensual op2 = {op2}")
-print(f"ganancia_final = {op2*kwargs['time']}")
+# print(f"Cuota mensual op2 = {op2}")
+# print(f"ganancia_final = {op2*kwargs['time']}")
