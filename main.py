@@ -41,7 +41,7 @@ class Main:
         if st.button("Calcular/Simular"):
             tasa = self.get_tasa_from_spreadsheets()
             data = {"deuda": int(vlr_solicitado), "rate": tasa, "time": int(plazo)}
-            st.write(data)
+            # st.write(data)
 
             self.calcular_valores(**data)
 
