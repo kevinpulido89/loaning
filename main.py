@@ -28,17 +28,17 @@ class Main:
             step=20000,
             format=None,
             key=None,
-            help="Ingrese el valor que desea pedir prestado (COP)",
+            help="Ingrese el valor que desea pedir prestado (COP):",
         )
 
         plazo = st.slider(
-            label="Plazo a diferir (meses)",
+            label="Plazo a diferir (meses):",
             min_value=1,
             max_value=18,
             value=2,
             help="Ingrese el plazo en el que quiere diferir su préstamo",
         )
-        if st.button("Simular"):
+        if st.button("Simular..."):
             tasa = self.get_tasa_from_spreadsheets()
             data = {"deuda": int(vlr_solicitado), "rate": tasa, "time": int(plazo)}
             # st.write(data)
@@ -55,7 +55,7 @@ class Main:
 
             st.warning(
                 "📲 Para mayor información puede llamar o enviar Whatsapp al (+57) 3004273839.\
-                Si desea adjunte un pantallazo de esta simulación"
+                Si desea por favor adjunte un pantallazo de esta simulación"
             )
 
     def calcular_valores(self, **kwargs):
