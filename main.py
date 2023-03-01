@@ -1,62 +1,68 @@
 """
 Script para frontend de cálculo de préstamos
 """
-from dataclasses import dataclass
-
 import pandas as pd
 import streamlit as st
 from calculator import compound_interest
 
 
-@dataclass
 class Main:
     """
     Clase principal para crear interfaz de la calculadora de préstamos
     """
-
-    titulo: str
+    tope_minimo = 375_000
+    tope_maximo = 3_000_000
 
     def run(self) -> None:
         st.set_page_config(page_title="Simulador préstamos", page_icon="💰")
-        st.title(self.titulo)
+        st.title("Simulador de préstamos 💰")
 
         vlr_solicitado = st.number_input(
-            label="Valor a pedir prestado (COP)",
-            min_value=500000,
-            max_value=3000000,
-            value=500000,
-            step=20000,
-            format=None,
-            key=None,
-            help="Ingrese el valor que desea pedir prestado (COP):",
+            label="Valor a pedir prestado (COP):",
+            # min_value=self.tope_minimo,
+            # max_value=self.tope_maximo,
+            value=self.tope_minimo,
+            step=25_000,
+            help=f"Ingrese el valor que desea pedir prestado entre {self.tope_minimo:,} y {self.tope_maximo:,} COP",
         )
 
         plazo = st.slider(
             label="Plazo a diferir (meses):",
             min_value=1,
             max_value=18,
-            value=2,
-            help="Ingrese el plazo en el que quiere diferir su préstamo",
+            value=3,
+            help="Elija el plazo en meses el que quiere diferir su préstamo",
         )
-        if st.button("Simular..."):
-            tasa = self.get_tasa_from_spreadsheets()
-            data = {"deuda": int(vlr_solicitado), "rate": tasa, "time": int(plazo)}
-            # st.write(data)
 
-            self.calcular_valores(**data)
+        if st.button("Simular:"):
+            if vlr_solicitado > self.tope_maximo:
+                st.error(f"El valor solicitado supera el máximo permitido (${self.tope_maximo:,})", icon="🚨")
+                st.stop()
+            elif vlr_solicitado < self.tope_minimo:
+                st.error(f"El valor solicitado es inferior al mínimo permitido (${self.tope_minimo:,})", icon="🚨")
+                st.stop()
+            else:
+                tasa = self.get_tasa_from_spreadsheets()
+                if vlr_solicitado >= 2000000:
+                    tasa -= 2.0
+                elif vlr_solicitado >= 1000000:
+                    tasa -= 1.0
 
-            # st.text(f"{round(self.intereses_generados)=}")
+                data = {"deuda": int(vlr_solicitado), "rate": tasa, "time": int(plazo)}
+                # st.write(data)
 
-            st.text(f"El plan de pago propuesto sería:")
-            st.info(
-                # f"cuotas de ${round(self.cuota_mensual)} por {data['time']} meses"
-                f"{data['time']} cuotas de ${self.cuota_mensual:,}"
-            )
+                self.calcular_valores(**data)
 
-            st.warning(
-                "📲 Para mayor información puede llamar o enviar Whatsapp al (+57) 3004273839.\
-                Si desea por favor adjunte un pantallazo de esta simulación"
-            )
+                # st.text(f"{round(self.intereses_generados)=}")
+
+                st.markdown("**El plan de pago _propuesto_ sería:**")
+                st.success(f"{data['time']} cuotas de ${self.cuota_mensual:,} COP")
+
+                st.warning(
+                    "Para mayor información puede llamar o enviar Whatsapp al (+57) 3004273839.\
+                    Si desea por favor adjunte un pantallazo de esta simulación",
+                    icon="📲",
+                )
 
     def calcular_valores(self, **kwargs):
         self.cuota_mensual, self.intereses_generados = compound_interest(**kwargs)
@@ -75,4 +81,4 @@ class Main:
 
 
 if __name__ == "__main__":
-    Main(titulo="Simulador de préstamos 💰").run()
+    Main().run()
