@@ -1,10 +1,9 @@
 """
 Script para frontend de cálculo de préstamos
 """
-from dataclasses import dataclass
-
 import pandas as pd
 import streamlit as st
+from dataclasses import dataclass
 from calculator import compound_interest
 
 
@@ -21,14 +20,12 @@ class Main:
         st.title(self.titulo)
 
         vlr_solicitado = st.number_input(
-            label="Valor a pedir prestado (COP)",
-            min_value=500000,
+            label="Valor a pedir prestado (COP):",
+            min_value=350000,
             max_value=3000000,
             value=500000,
-            step=20000,
-            format=None,
-            key=None,
-            help="Ingrese el valor que desea pedir prestado (COP):",
+            step=25000,
+            help="Ingrese el valor que desea pedir prestado (COP)",
         )
 
         plazo = st.slider(
@@ -38,8 +35,14 @@ class Main:
             value=2,
             help="Ingrese el plazo en el que quiere diferir su préstamo",
         )
-        if st.button("Simular..."):
+        if st.button("Simular:"):
             tasa = self.get_tasa_from_spreadsheets()
+
+            if int(vlr_solicitado) >= 2000000:
+                tasa -= 2.0
+            elif int(vlr_solicitado) >= 1000000:
+                tasa -= 1.0
+
             data = {"deuda": int(vlr_solicitado), "rate": tasa, "time": int(plazo)}
             # st.write(data)
 
@@ -47,15 +50,13 @@ class Main:
 
             # st.text(f"{round(self.intereses_generados)=}")
 
-            st.text(f"El plan de pago propuesto sería:")
-            st.info(
-                # f"cuotas de ${round(self.cuota_mensual)} por {data['time']} meses"
-                f"{data['time']} cuotas de ${self.cuota_mensual:,}"
-            )
+            st.markdown("**El plan de pago _propuesto_ sería:**")
+            st.success(f"{data['time']} cuotas de ${self.cuota_mensual:,} COP")
 
             st.warning(
-                "📲 Para mayor información puede llamar o enviar Whatsapp al (+57) 3004273839.\
-                Si desea por favor adjunte un pantallazo de esta simulación"
+                "Para mayor información puede llamar o enviar Whatsapp al (+57) 3004273839.\
+                Si desea por favor adjunte un pantallazo de esta simulación",
+                icon="📲",
             )
 
     def calcular_valores(self, **kwargs):
