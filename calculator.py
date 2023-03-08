@@ -17,7 +17,7 @@ def calculate_compound_interest(deuda: int, rate: float, time: float) -> float:
     """
 
     pago = deuda * (pow((1 + rate / 100), time))
-    return round(pago - deuda)
+    return pago - deuda
 
 
 def compound_interest(deuda: int, rate: float, time: int):
