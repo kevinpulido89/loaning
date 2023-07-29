@@ -1,11 +1,7 @@
-"""
-script to find compound interest for given values.
-"""
-
+"""Script to find compound interest for given values"""
 
 def calculate_compound_interest(deuda: int, rate: float, time: float) -> float:
-    """
-    Calculates compound interest
+    """Calculates compound interest
 
     Args:
         deuda (float): _description_
@@ -19,9 +15,8 @@ def calculate_compound_interest(deuda: int, rate: float, time: float) -> float:
     pago = deuda * (pow((1 + rate / 100), time))
     return pago - deuda
 
-
-def compound_interest(deuda: int, rate: float, time: int):
-    """doc"""
+def compound_interest(deuda: int, rate: float, time: int) -> tuple:
+    """ Get monthly fee and interest for the amount of time requested"""
     intereses = []
     base = deuda / time
     saldo = deuda
