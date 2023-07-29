@@ -70,6 +70,7 @@ class Main:
             URL = f"https://docs.google.com/spreadsheets/d/{google_sheet_id}/gviz/tq?tqx=out:csv&sheet=nm"
             df = pd.read_csv(URL)
             df = df.dropna(axis=1, how="all")
+            df["tasa"] = df["tasa"].str.replace(",",".")
             return float(df.tasa.values[0])
         except Exception:
             st.write("tasa offline")
