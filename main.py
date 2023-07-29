@@ -1,17 +1,14 @@
-"""
-Script para frontend de cálculo de préstamos
-"""
+""" Script para frontend de cálculo de préstamos """
 import pandas as pd
 import streamlit as st
+
 from calculator import compound_interest
 
 
 class Main:
-    """
-    Clase principal para crear interfaz de la calculadora de préstamos
-    """
+    """ Crea interfaz de la calculadora de préstamos"""
     tope_minimo = 375_000
-    tope_maximo = 3_000_000
+    tope_maximo = 3_500_000
 
     def run(self) -> None:
         st.set_page_config(page_title="Simulador préstamos", page_icon="💰")
@@ -19,8 +16,8 @@ class Main:
 
         vlr_solicitado = st.number_input(
             label="Valor a pedir prestado (COP):",
-            # min_value=self.tope_minimo,
-            # max_value=self.tope_maximo,
+            min_value=self.tope_minimo,
+            max_value=self.tope_maximo,
             value=self.tope_minimo,
             step=25_000,
             help=f"Ingrese el valor que desea pedir prestado entre {self.tope_minimo:,} y {self.tope_maximo:,} COP",
@@ -43,24 +40,23 @@ class Main:
                 st.stop()
             else:
                 tasa = self.get_tasa_from_spreadsheets()
-                if vlr_solicitado >= 2000000:
+                if vlr_solicitado > 2000000:
                     tasa -= 2.0
-                elif vlr_solicitado >= 1000000:
+                elif vlr_solicitado > 1000000:
                     tasa -= 1.0
 
                 data = {"deuda": int(vlr_solicitado), "rate": tasa, "time": int(plazo)}
-                # st.write(data)
-
                 self.calcular_valores(**data)
 
-                # st.text(f"{round(self.intereses_generados)=}")
+                # data.update({"intereses generados": self.intereses_generados})
+                # st.write(data)
 
                 st.markdown("**El plan de pago _propuesto_ sería:**")
                 st.success(f"{data['time']} cuotas de ${self.cuota_mensual:,} COP")
 
                 st.warning(
-                    "Para mayor información puede llamar o enviar Whatsapp al (+57) 3004273839.\
-                    Si desea por favor adjunte un pantallazo de esta simulación",
+                    "Para mayor información puede llamar o enviar un Whatsapp al (+57) 3004273839.\
+                    Si desea, por favor, adjunte un pantallazo de esta simulación.",
                     icon="📲",
                 )
 
@@ -77,7 +73,7 @@ class Main:
             return float(df.tasa.values[0])
         except Exception:
             st.write("tasa offline")
-            return 6.4
+            return 5.09
 
 
 if __name__ == "__main__":
