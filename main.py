@@ -1,11 +1,28 @@
 """ Script para frontend de cálculo de préstamos """
-import sys
 import pandas as pd
 import streamlit as st
 from calculator import compound_interest
 
 st.set_page_config(page_title="Simulador préstamos", page_icon="💰")
 
+@st.cache_data
+def calcular_valores(**kwargs):
+    cuota_mensual, intereses_generados = compound_interest(**kwargs)
+    cuota_mensual = round(cuota_mensual)
+    return cuota_mensual, intereses_generados
+
+@st.cache_data
+def get_data_from_spreadsheets() -> tuple:
+    try:
+        google_sheet_id = st.secrets["google_sheet_id"]
+        URL = f"https://docs.google.com/spreadsheets/d/{google_sheet_id}/gviz/tq?tqx=out:csv&sheet=nm"
+        df = pd.read_csv(URL)
+        df = df.dropna(axis=1, how="all")
+        df["tasa"] = df["tasa"].str.replace(",",".")
+        return float(df.tasa.values[0]), int(df.minimo.values[0]), int(df.maximo.values[0])
+    except Exception:
+        st.write("Data offline")
+        return 5.1, 375_000, 3_750_000
 
 class Main:
     """ Crea interfaz de la calculadora de préstamos"""
@@ -15,7 +32,6 @@ class Main:
 
     def run(self) -> None:
         st.title("Simulador de préstamos 💰")
-        st.write(sys.version)
 
         vlr_solicitado = st.number_input(
             label="Valor a pedir prestado (COP):",
@@ -51,7 +67,7 @@ class Main:
                     self.tasa = self.tasa * 1.2
 
                 data = {"deuda": int(vlr_solicitado), "rate": self.tasa, "time": int(plazo)}
-                self.cuota_mensual, self.intereses_generados = self.calcular_valores(**data)
+                self.cuota_mensual, self.intereses_generados = calcular_valores(**data)
 
                 # data.update({"intereses generados": self.intereses_generados})
                 # st.write(data)
@@ -64,26 +80,6 @@ class Main:
                     Si desea, por favor, adjunte un pantallazo de esta simulación.",
                     icon="📲",
                 )
-
-    @st.cache_data
-    def calcular_valores(self, **kwargs):
-        cuota_mensual, intereses_generados = compound_interest(**kwargs)
-        cuota_mensual = round(cuota_mensual)
-
-        return cuota_mensual, intereses_generados
-
-@st.cache_data
-def get_data_from_spreadsheets() -> tuple:
-    try:
-        google_sheet_id = st.secrets["google_sheet_id"]
-        URL = f"https://docs.google.com/spreadsheets/d/{google_sheet_id}/gviz/tq?tqx=out:csv&sheet=nm"
-        df = pd.read_csv(URL)
-        df = df.dropna(axis=1, how="all")
-        df["tasa"] = df["tasa"].str.replace(",",".")
-        return float(df.tasa.values[0]), int(df.minimo.values[0]), int(df.maximo.values[0])
-    except Exception:
-        st.write("Data offline")
-        return 5.1, 375_000, 3_750_000
 
 if __name__ == "__main__":
     Main().run()
