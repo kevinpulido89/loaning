@@ -11,7 +11,7 @@ class Main:
     """ Crea interfaz de la calculadora de préstamos"""
 
     def __init__(self):
-        self.tasa, self.tope_minimo, self.tope_maximo = self.get_data_from_spreadsheets()
+        self.tasa, self.tope_minimo, self.tope_maximo = get_data_from_spreadsheets()
 
     def run(self) -> None:
         st.title("Simulador de préstamos 💰")
@@ -72,18 +72,18 @@ class Main:
 
         return cuota_mensual, intereses_generados
 
-    @st.cache_data
-    def get_data_from_spreadsheets(self) -> tuple:
-        try:
-            google_sheet_id = st.secrets["google_sheet_id"]
-            URL = f"https://docs.google.com/spreadsheets/d/{google_sheet_id}/gviz/tq?tqx=out:csv&sheet=nm"
-            df = pd.read_csv(URL)
-            df = df.dropna(axis=1, how="all")
-            df["tasa"] = df["tasa"].str.replace(",",".")
-            return float(df.tasa.values[0]), int(df.minimo.values[0]), int(df.maximo.values[0])
-        except Exception:
-            st.write("Data offline")
-            return 5.1, 375_000, 3_750_000
+@st.cache_data
+def get_data_from_spreadsheets() -> tuple:
+    try:
+        google_sheet_id = st.secrets["google_sheet_id"]
+        URL = f"https://docs.google.com/spreadsheets/d/{google_sheet_id}/gviz/tq?tqx=out:csv&sheet=nm"
+        df = pd.read_csv(URL)
+        df = df.dropna(axis=1, how="all")
+        df["tasa"] = df["tasa"].str.replace(",",".")
+        return float(df.tasa.values[0]), int(df.minimo.values[0]), int(df.maximo.values[0])
+    except Exception:
+        st.write("Data offline")
+        return 5.1, 375_000, 3_750_000
 
 if __name__ == "__main__":
     Main().run()
